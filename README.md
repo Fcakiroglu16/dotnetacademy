@@ -8,7 +8,7 @@ Each lesson lives on its own branch. `main` only holds this index.
 
 | Lesson | Branch |
 | --- | --- |
-| Union Types | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
+| [Union Types](https://dotnetacademy.dev/lesson/c-15-union-types-one-value-a-closed-set-of-types/359) | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
 
 ## Running a lesson
 
