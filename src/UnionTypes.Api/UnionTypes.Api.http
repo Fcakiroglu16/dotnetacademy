@@ -1,0 +1,52 @@
+@baseUrl = http://localhost:5080
+
+### List pets (union in the response)
+GET {{baseUrl}}/pets
+
+### One pet
+GET {{baseUrl}}/pets/2
+
+### Add a dog (the "breed" property selects Dog)
+POST {{baseUrl}}/pets
+Content-Type: application/json
+
+{ "name": "Karabas", "breed": "Kangal" }
+
+### Add a cat (the "lives" property selects Cat)
+POST {{baseUrl}}/pets
+Content-Type: application/json
+
+{ "name": "Tekir", "lives": 9 }
+
+### Ambiguous body: matches no case -> 400
+POST {{baseUrl}}/pets
+Content-Type: application/json
+
+{ "name": "Nemo" }
+
+### Pattern matching on a union
+GET {{baseUrl}}/pets/3/sound
+
+### Payment succeeded -> 200
+POST {{baseUrl}}/payments
+Content-Type: application/json
+
+{ "cardNumber": "4111111111111111", "amount": 150 }
+
+### Payment declined -> 422
+POST {{baseUrl}}/payments
+Content-Type: application/json
+
+{ "cardNumber": "4111111111110000", "amount": 150 }
+
+### Payment failed -> 400
+POST {{baseUrl}}/payments
+Content-Type: application/json
+
+{ "cardNumber": "4111111111111111", "amount": -5 }
+
+### Readings: int or string in the same field
+GET {{baseUrl}}/readings
+
+### OpenAPI document (unions appear as anyOf)
+GET {{baseUrl}}/openapi/v1.json

@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/UnionTypes.Api/UnionTypes.Api.csproj" />
+    <Project Path="src/UnionTypes.ConsoleApp/UnionTypes.ConsoleApp.csproj" />
+  </Folder>
+</Solution>
