@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MigrationBundles.Api/MigrationBundles.Api.csproj" />
+    <Project Path="src/MigrationBundles.Data/MigrationBundles.Data.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,28 @@
+# One Job per release: runs once per deployment, not once per pod like an init container would.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shop-migrate-1-0-0
+  labels:
+    app: shop-migrator
+    release: "1.0.0"
+spec:
+  backoffLimit: 0              # a failed migration needs a human, not blind retries
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app: shop-migrator
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: shop-migrator:1.0.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MIGRATION_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: shop-migrator-db   # migration identity, not the app's credentials
+                  key: connection-string

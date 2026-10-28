@@ -1,0 +1,124 @@
+name: EF Core migration bundles
+
+on:
+  push:
+    branches: [efcore-migration-bundles]
+  pull_request:
+    branches: [efcore-migration-bundles]
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Build job: no database credentials at all.
+    runs-on: ubuntu-latest
+    env:
+      ASPNETCORE_ENVIRONMENT: Production
+      DOTNET_ENVIRONMENT: Production
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: |
+          dotnet tool restore
+          dotnet restore
+
+      - name: Fail if the model has changes without a migration
+        run: |
+          dotnet ef migrations has-pending-model-changes \
+            --project src/MigrationBundles.Data --startup-project src/MigrationBundles.Api --context CatalogDbContext
+          dotnet ef migrations has-pending-model-changes \
+            --project src/MigrationBundles.Data --startup-project src/MigrationBundles.Data --context AuditDbContext
+
+      - name: Generate idempotent SQL for review
+        run: |
+          dotnet ef migrations script --idempotent \
+            --project src/MigrationBundles.Data --startup-project src/MigrationBundles.Api --context CatalogDbContext \
+            --output out/catalog.sql
+          dotnet ef migrations script --idempotent \
+            --project src/MigrationBundles.Data --startup-project src/MigrationBundles.Data --context AuditDbContext \
+            --output out/audit.sql
+
+      - name: Build Linux migration bundles
+        run: |
+          dotnet ef migrations bundle \
+            --project src/MigrationBundles.Data --startup-project src/MigrationBundles.Api --context CatalogDbContext \
+            --configuration Release --target-runtime linux-x64 --self-contained \
+            --output out/catalog-bundle
+          dotnet ef migrations bundle \
+            --project src/MigrationBundles.Data --startup-project src/MigrationBundles.Data --context AuditDbContext \
+            --configuration Release --target-runtime linux-x64 --self-contained \
+            --output out/audit-bundle
+          cp src/MigrationBundles.Api/appsettings.json out/
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ef-migrations
+          path: out/
+
+  migrate:
+    # Deployment job: receives the tested artifact, never the source code or the SDK.
+    needs: build
+    runs-on: ubuntu-latest
+    # In a real pipeline: environment: production (with required reviewers),
+    # and the connection string comes from ${{ secrets.MIGRATION_CONNECTION_STRING }}.
+    concurrency:
+      group: shop-database-migrations
+      cancel-in-progress: false
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 2s
+          --health-retries 30
+    env:
+      ASPNETCORE_ENVIRONMENT: Production
+      DOTNET_ENVIRONMENT: Production
+      MIGRATION_CONNECTION_STRING: Host=localhost;Database=shop;Username=shop_migrator;Password=migrator_pw
+      APP_CONNECTION_STRING: Host=localhost;Database=shop;Username=shop_app;Password=app_pw
+      PGPASSWORD: postgres
+    steps:
+      - name: Create demo roles and databases
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: db
+      - run: psql --host=localhost --username=postgres --set=ON_ERROR_STOP=1 --file=db/init.sql
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: ef-migrations
+          path: bundle
+
+      - name: The application identity cannot change the schema
+        working-directory: bundle
+        run: |
+          chmod +x catalog-bundle audit-bundle
+          if ./catalog-bundle --connection "$APP_CONNECTION_STRING" --no-color > app-identity.log 2>&1; then
+            echo "::error::shop_app was able to run migrations"; exit 1
+          fi
+          grep -m1 "42501" app-identity.log
+
+      - name: Apply migrations
+        working-directory: bundle
+        run: |
+          ./catalog-bundle --connection "$MIGRATION_CONNECTION_STRING" --no-color --prefix-output
+          ./audit-bundle --connection "$MIGRATION_CONNECTION_STRING" --no-color --prefix-output
+
+      - name: Run again, nothing should be applied
+        working-directory: bundle
+        run: ./catalog-bundle --connection "$MIGRATION_CONNECTION_STRING" --no-color --prefix-output | grep "No migrations were applied"
+
+      - name: Verify the schema
+        run: |
+          psql --host=localhost --username=postgres --dbname=shop --set=ON_ERROR_STOP=1 \
+            -c 'SELECT "MigrationId" FROM "__EFMigrationsHistory"' \
+            -c 'SELECT "MigrationId" FROM audit."__EFMigrationsHistory"' \
+            -c 'SELECT "Name", "Stock" FROM "Products"'

@@ -1,0 +1,40 @@
+# Builds a self-contained migration bundle and ships it in a tiny image without the .NET runtime or SDK.
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG TARGETARCH
+WORKDIR /src
+
+COPY global.json dotnet-tools.json MigrationBundles.slnx ./
+COPY src/MigrationBundles.Data/MigrationBundles.Data.csproj src/MigrationBundles.Data/
+COPY src/MigrationBundles.Api/MigrationBundles.Api.csproj src/MigrationBundles.Api/
+RUN dotnet tool restore && dotnet restore src/MigrationBundles.Api -a $TARGETARCH
+
+COPY src/ src/
+ENV ASPNETCORE_ENVIRONMENT=Production DOTNET_ENVIRONMENT=Production
+RUN dotnet ef migrations bundle \
+        --project src/MigrationBundles.Data \
+        --startup-project src/MigrationBundles.Api \
+        --context CatalogDbContext \
+        --configuration Release \
+        --target-runtime linux-$([ "$TARGETARCH" = "arm64" ] && echo arm64 || echo x64) \
+        --self-contained \
+        --output /out/catalog-bundle \
+    && dotnet ef migrations bundle \
+        --project src/MigrationBundles.Data \
+        --startup-project src/MigrationBundles.Data \
+        --context AuditDbContext \
+        --configuration Release \
+        --target-runtime linux-$([ "$TARGETARCH" = "arm64" ] && echo arm64 || echo x64) \
+        --self-contained \
+        --output /out/audit-bundle \
+    && cp src/MigrationBundles.Api/appsettings.json /out/
+
+FROM mcr.microsoft.com/dotnet/runtime-deps:10.0
+# Self-contained still needs the OS libraries the provider loads; Npgsql probes for GSSAPI (Kerberos).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /migrations
+COPY --from=build /out/ ./
+COPY deploy/migrate.sh ./
+USER $APP_UID
+ENTRYPOINT ["./migrate.sh"]

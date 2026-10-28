@@ -1,0 +1,33 @@
+@Api = http://localhost:5080
+
+### Pending migrations per context (503 until the bundle has run)
+GET {{Api}}/health/schema
+
+### Products, seeded by UseSeeding/UseAsyncSeeding
+GET {{Api}}/products
+
+### Create a product (also writes to the audit context)
+POST {{Api}}/products
+Content-Type: application/json
+
+{
+  "name": "EF Core Migrations Workshop",
+  "sku": "EF-MIG-01",
+  "price": 29.90,
+  "stock": 25,
+  "categoryId": 2
+}
+
+### Unknown category returns 400
+POST {{Api}}/products
+Content-Type: application/json
+
+{
+  "name": "Ghost",
+  "price": 1,
+  "stock": 1,
+  "categoryId": 99
+}
+
+### Latest audit entries
+GET {{Api}}/audit
