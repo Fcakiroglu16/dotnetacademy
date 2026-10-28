@@ -1,6 +1,6 @@
 # EF Core Migration Bundles
 
-Source code for the dotnetacademy.dev lesson **EF Core Migrations the Right Way: Migration Bundles in CI/CD**.
+Source code for the dotnetacademy.dev lesson [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360).
 
 Instead of calling `MigrateAsync()` when the app starts, the schema is changed by a separate,
 versioned executable (`efbundle`) that runs with its own database identity:
