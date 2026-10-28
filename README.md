@@ -1,6 +1,6 @@
 # Claude Code Permissions for .NET
 
-Source code for the dotnetacademy.dev lesson **Claude Code Permissions for .NET Projects**.
+Source code for the dotnetacademy.dev lesson [Claude Code Permissions for .NET Projects: Allow, Ask and Deny](https://dotnetacademy.dev/lesson/claude-code-permissions-for-net-projects-allow-ask-and-deny/361).
 
 A small .NET 10 solution with a project-level Claude Code permission policy:
 
