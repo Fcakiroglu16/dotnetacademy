@@ -16,6 +16,12 @@ Each lesson lives on its own branch. `main` only holds this index.
 | --- | --- |
 | [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
 
+## Claude Code
+
+| Lesson | Branch |
+| --- | --- |
+| [Claude Code Permissions for .NET Projects: Allow, Ask and Deny](https://dotnetacademy.dev/lesson/claude-code-permissions-for-net-projects-allow-ask-and-deny/361) | [`claude-code-dotnet-permissions`](https://github.com/Fcakiroglu16/dotnetacademy/tree/claude-code-dotnet-permissions) |
+
 ## Running a lesson
 
 ```bash
