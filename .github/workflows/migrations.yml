@@ -86,11 +86,13 @@ jobs:
       APP_CONNECTION_STRING: Host=localhost;Database=shop;Username=shop_app;Password=app_pw
       PGPASSWORD: postgres
     steps:
-      - name: Create demo roles and databases
-        uses: actions/checkout@v7
+      # Only db/init.sql is checked out, to create the demo roles. A real deployment needs no source.
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: db
-      - run: psql --host=localhost --username=postgres --set=ON_ERROR_STOP=1 --file=db/init.sql
+
+      - name: Create demo roles and databases
+        run: psql --host=localhost --username=postgres --set=ON_ERROR_STOP=1 --file=db/init.sql
 
       - uses: actions/download-artifact@v8
         with:
