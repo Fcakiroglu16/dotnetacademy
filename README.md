@@ -1,28 +1,40 @@
-# dotnetacademy
+# Claude Code Permissions for .NET
 
-Source code for the lessons on [dotnetacademy.dev](https://dotnetacademy.dev).
+Source code for the dotnetacademy.dev lesson **Claude Code Permissions for .NET Projects**.
 
-Each lesson lives on its own branch. `main` only holds this index.
+A small .NET 10 solution with a project-level Claude Code permission policy:
 
-## C# 15 (.NET 11)
+| Rule | Commands | Effect |
+| --- | --- | --- |
+| `allow` | `dotnet --info`, `dotnet build`, `dotnet test`, `dotnet test --filter *` | Run without asking |
+| `ask` | `dotnet add *`, `dotnet publish *`, `dotnet ef database update *` | Always ask, even if another file allows them |
+| `deny` | `Read(./.env)`, `Read(./**/appsettings.Production.json)`, `dotnet nuget push *` | Never run, no setting can allow them |
 
-| Lesson | Branch |
+## Files
+
+| Path | Purpose |
 | --- | --- |
-| [Union Types](https://dotnetacademy.dev/lesson/c-15-union-types-one-value-a-closed-set-of-types/359) | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
+| `.claude/settings.json` | Shared, committed permission rules |
+| `.claude/settings.local.json` | Your personal rules, git-ignored (not in the repo) |
+| `CLAUDE.md` | Instructions for the model. They guide it but enforce nothing |
+| `.env.example` | Copy to `.env` to test the `Read(./.env)` deny rule. The value is fake |
+| `src/Shipping.Api`, `tests/Shipping.Tests` | The application and its tests |
 
-## Entity Framework Core
-
-| Lesson | Branch |
-| --- | --- |
-| [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
-
-## Running a lesson
+## Try it
 
 ```bash
-git clone https://github.com/Fcakiroglu16/dotnetacademy.git
-cd dotnetacademy
-git switch csharp15-union-types
-dotnet run --project src/UnionTypes.ConsoleApp
+cp .env.example .env
+dotnet build && dotnet test
+claude            # accept the workspace trust dialog once, then run /permissions
 ```
 
-The EF Core lessons need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) and Docker. The C# 15 lessons need the [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (RC 2 or later).
+Project `allow` rules are ignored until the folder is trusted. Deny and ask rules always apply.
+
+Headless check of a single command, without your user settings:
+
+```bash
+claude -p 'Run `dotnet publish src/Shipping.Api -c Release -o out`' \
+  --setting-sources project,local --output-format json
+```
+
+The JSON result lists the refused call under `permission_denials`.

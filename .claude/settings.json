@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(dotnet --info)",
+      "Bash(dotnet build)",
+      "Bash(dotnet test)",
+      "Bash(dotnet test --filter *)"
+    ],
+    "ask": [
+      "Bash(dotnet add *)",
+      "Bash(dotnet publish *)",
+      "Bash(dotnet ef database update *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./**/appsettings.Production.json)",
+      "Bash(dotnet nuget push *)"
+    ]
+  }
+}
