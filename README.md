@@ -10,6 +10,12 @@ Each lesson lives on its own branch. `main` only holds this index.
 | --- | --- |
 | [Union Types](https://dotnetacademy.dev/lesson/c-15-union-types-one-value-a-closed-set-of-types/359) | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
 
+## Entity Framework Core
+
+| Lesson | Branch |
+| --- | --- |
+| [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
+
 ## Running a lesson
 
 ```bash
@@ -19,4 +25,4 @@ git switch csharp15-union-types
 dotnet run --project src/UnionTypes.ConsoleApp
 ```
 
-The C# 15 lessons need the [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (RC 2 or later).
+The EF Core lessons need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) and Docker. The C# 15 lessons need the [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (RC 2 or later).
