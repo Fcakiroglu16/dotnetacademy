@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ShipmentTracking.Api/ShipmentTracking.Api.csproj" />
+    <Project Path="src/ShipmentTracking.ConsoleApp/ShipmentTracking.ConsoleApp.csproj" />
+    <Project Path="src/ShipmentTracking.Data/ShipmentTracking.Data.csproj" />
+  </Folder>
+</Solution>

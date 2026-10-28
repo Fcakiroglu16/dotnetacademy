@@ -1,9 +1,0 @@
-@Api = http://localhost:5081
-
-GET {{Api}}/games/victory/firstToEdge
-
-###
-GET {{Api}}/games/led-by/player-042
-
-###
-GET {{Api}}/games/edge/player-042

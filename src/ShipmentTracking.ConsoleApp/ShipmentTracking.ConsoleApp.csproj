@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\NestedGameState.Data\NestedGameState.Data.csproj" />
+    <ProjectReference Include="..\ShipmentTracking.Data\ShipmentTracking.Data.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

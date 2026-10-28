@@ -1,0 +1,12 @@
+@Api = http://localhost:5081
+
+GET {{Api}}/shipments/at-hub/DE-HAM-2
+
+###
+GET {{Api}}/shipments/stale/DHLX?days=25
+
+###
+GET {{Api}}/shipments/from/PT/count
+
+###
+GET {{Api}}/shipments/customs/Basel/count

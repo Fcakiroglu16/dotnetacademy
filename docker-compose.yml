@@ -1,11 +1,11 @@
-name: nested-game-state
+name: shipment-tracking
 
 services:
   postgres:
     image: postgres:17
     environment:
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: nested_games
+      POSTGRES_DB: shipments
     ports:
       - "5434:5432"
     healthcheck:
