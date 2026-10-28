@@ -1,34 +1,49 @@
-# dotnetacademy
+# EF Core 11: Indexing and Querying Nested Complex Types
 
-Source code for the lessons on [dotnetacademy.dev](https://dotnetacademy.dev).
+Sample code for the dotnetacademy.dev lesson
+[EF Core 11: Indexing and Querying Nested Complex Types](https://dotnetacademy.dev/lesson/ef-core-11-indexing-and-querying-nested-complex-types/362).
 
-Each lesson lives on its own branch. `main` only holds this index.
+A saved board game is stored in one PostgreSQL table:
 
-## C# 15 (.NET 11)
+- `Board -> Tiles -> Position` is a complex collection in one `jsonb` column.
+- `Summary -> Leader / Victory` are nested complex types in ordinary columns,
+  indexed with EF Core 11's `HasIndex(g => g.Summary.Leader.PlayerId)`.
+- A hand-written migration adds a GIN index on `Board` for `@>` containment
+  queries written with `EF.Functions.JsonContains`.
 
-| Lesson | Branch |
+Tested with .NET SDK `11.0.100-rc.2.26504.105`, EF Core `11.0.0-rc.2.26504.105`,
+Npgsql EF provider `11.0.0-rc.2` and PostgreSQL 17.
+
+## Layout
+
+| Path | What it is |
 | --- | --- |
-| [Union Types](https://dotnetacademy.dev/lesson/c-15-union-types-one-value-a-closed-set-of-types/359) | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
+| `src/NestedGameState.Data` | Model, `GameDbContext`, migrations, queries, seeder |
+| `src/NestedGameState.ConsoleApp` | Seeds games, prints SQL, `EXPLAIN ANALYZE` plans and timings |
+| `src/NestedGameState.Api` | Minimal API on port 5081 (`NestedGameState.Api.http`) |
+| `docker-compose.yml` | PostgreSQL 17 on port 5434 |
 
-## Entity Framework Core
-
-| Lesson | Branch |
-| --- | --- |
-| [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
-
-## Claude Code
-
-| Lesson | Branch |
-| --- | --- |
-| [Claude Code Permissions for .NET Projects: Allow, Ask and Deny](https://dotnetacademy.dev/lesson/claude-code-permissions-for-net-projects-allow-ask-and-deny/361) | [`claude-code-dotnet-permissions`](https://github.com/Fcakiroglu16/dotnetacademy/tree/claude-code-dotnet-permissions) |
-
-## Running a lesson
+## Run
 
 ```bash
-git clone https://github.com/Fcakiroglu16/dotnetacademy.git
-cd dotnetacademy
-git switch csharp15-union-types
-dotnet run --project src/UnionTypes.ConsoleApp
+docker compose up -d --wait
+dotnet tool restore
+
+# migrate, seed 20,000 games, print SQL, plans and timings
+dotnet run --project src/NestedGameState.ConsoleApp -- all
+
+# or step by step
+dotnet run --project src/NestedGameState.ConsoleApp -- reset 1000
+dotnet run --project src/NestedGameState.ConsoleApp -- sql
+dotnet run --project src/NestedGameState.ConsoleApp -- plans
+dotnet run --project src/NestedGameState.ConsoleApp -- bench
+
+dotnet run --project src/NestedGameState.Api --launch-profile http
+curl http://localhost:5081/games/led-by/player-042
 ```
 
-The EF Core lessons need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) and Docker. The C# 15 lessons need the [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (RC 2 or later).
+The console app calls `Database.MigrateAsync()` at startup. That is a demo
+shortcut; use migration bundles or SQL scripts in production.
+
+Based on Sarah Dutkiewicz's article
+[EF Core 11: Querying Deeply Nested Game State Without Schema Friction](https://blog.nimblepros.com/blogs/ef-core-11-querying-deeply-nested-game-state/).

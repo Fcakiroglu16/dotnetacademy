@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NestedGameState.Api/NestedGameState.Api.csproj" />
+    <Project Path="src/NestedGameState.ConsoleApp/NestedGameState.ConsoleApp.csproj" />
+    <Project Path="src/NestedGameState.Data/NestedGameState.Data.csproj" />
+  </Folder>
+</Solution>
