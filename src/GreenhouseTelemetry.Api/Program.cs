@@ -5,18 +5,21 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var pool = builder.Configuration.GetSection("Pool");
-var instance = builder.Configuration["InstanceName"] ?? "ingest";
+var connectionString = PoolSettings.BuildConnectionString(builder.Configuration);
+var retryOnFailure = builder.Configuration.GetValue<bool>("Database:RetryOnFailure");
 
-// One NpgsqlDataSource per process = one connection pool per process.
-builder.Services.AddNpgsqlDataSource(
-    builder.Configuration.GetConnectionString("Telemetry")!,
-    dataSource => dataSource.ConnectionStringBuilder.ApplyPoolSettings(pool, instance));
+// Pooled factory: TelemetryDb instances are reused, and the Npgsql provider keeps
+// one connection pool (one NpgsqlDataSource) for this connection string.
+builder.Services.AddPooledDbContextFactory<TelemetryDb>(options => options
+    .UseNpgsql(connectionString, npgsql =>
+    {
+        if (retryOnFailure) npgsql.EnableRetryOnFailure(maxRetryCount: 3);
+    })
+    .UseSnakeCaseNamingConvention());
 
-// EF Core borrows connections from the same data source instead of building its own pool.
-builder.Services.AddDbContextPool<TelemetryDb>((sp, options) =>
-    options.UseNpgsql(sp.GetRequiredService<NpgsqlDataSource>())
-           .UseSnakeCaseNamingConvention());
+// Endpoints that only need a context get a scoped one from the same factory;
+// the request scope disposes it, which returns its connection to the pool.
+builder.Services.AddScoped(sp => sp.GetRequiredService<IDbContextFactory<TelemetryDb>>().CreateDbContext());
 
 var app = builder.Build();
 

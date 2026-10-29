@@ -4,13 +4,19 @@ namespace GreenhouseTelemetry.Api;
 
 public static class PoolSettings
 {
-    public static void ApplyPoolSettings(this NpgsqlConnectionStringBuilder csb, IConfiguration pool, string instance)
+    // The pool is configured through the connection string that EF Core passes to Npgsql.
+    public static string BuildConnectionString(IConfiguration configuration)
     {
-        csb.Pooling = true;
-        csb.MaxPoolSize = pool.GetValue("MaxPoolSize", 10);
-        csb.MinPoolSize = pool.GetValue("MinPoolSize", 0);
-        csb.Timeout = pool.GetValue("TimeoutSeconds", 15); // seconds to wait for a free pooled connection
-        csb.CommandTimeout = 30;
-        csb.ApplicationName = $"greenhouse-{instance}"; // shows up in pg_stat_activity
+        var pool = configuration.GetSection("Pool");
+        var csb = new NpgsqlConnectionStringBuilder(configuration.GetConnectionString("Telemetry"))
+        {
+            Pooling = true,
+            MaxPoolSize = pool.GetValue("MaxPoolSize", 10),
+            MinPoolSize = pool.GetValue("MinPoolSize", 0),
+            Timeout = pool.GetValue("TimeoutSeconds", 15), // seconds to wait for a free pooled connection
+            CommandTimeout = 30,
+            ApplicationName = $"greenhouse-{configuration["InstanceName"] ?? "ingest"}" // shows up in pg_stat_activity
+        };
+        return csb.ConnectionString;
     }
 }
