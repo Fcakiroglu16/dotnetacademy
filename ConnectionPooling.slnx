@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GreenhouseTelemetry.Api/GreenhouseTelemetry.Api.csproj" />
+    <Project Path="src/GreenhouseTelemetry.LoadTest/GreenhouseTelemetry.LoadTest.csproj" />
+  </Folder>
+</Solution>

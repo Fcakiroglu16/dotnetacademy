@@ -1,0 +1,17 @@
+name: connection-pooling
+
+services:
+  postgres:
+    image: postgres:17
+    # A deliberately small server: 40 slots, 3 of them reserved for superusers.
+    command: postgres -c max_connections=40 -c superuser_reserved_connections=3
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      retries: 30

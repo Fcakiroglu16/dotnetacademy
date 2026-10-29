@@ -1,35 +1,43 @@
-# dotnetacademy
+# PostgreSQL Connection Pooling with Npgsql and EF Core
 
-Source code for the lessons on [dotnetacademy.dev](https://dotnetacademy.dev).
+Source code for the dotnetacademy.dev lesson [PostgreSQL Connection Pooling in .NET: Preventing Connection Exhaustion](https://dotnetacademy.dev/lesson/postgresql-connection-pooling-in-net-preventing-connection-exhaustion-with-npgsql-and-ef-core/363).
 
-Each lesson lives on its own branch. `main` only holds this index.
+A greenhouse telemetry API runs as several instances against a deliberately small PostgreSQL server
+(`max_connections=40`, 3 slots reserved for superusers). The scripts reproduce four production failures
+and their fixes: too many instances for the server, a leaked connection, a transaction held open across
+a slow HTTP call, and a correctly budgeted pool.
 
-## C# 15 (.NET 11)
+## Requirements
 
-| Lesson | Branch |
+- .NET 10 SDK (`global.json` pins `10.0.100` and rolls forward)
+- Docker (PostgreSQL 17 on port 5435)
+- bash (the helper scripts)
+
+## What is in the repository
+
+| Path | What it shows |
 | --- | --- |
-| [Union Types](https://dotnetacademy.dev/lesson/c-15-union-types-one-value-a-closed-set-of-types/359) | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
+| `src/GreenhouseTelemetry.Api` | Minimal API. One `NpgsqlDataSource` per process (`AddNpgsqlDataSource`), EF Core `AddDbContextPool` on top of it, `Application Name` per instance |
+| `src/GreenhouseTelemetry.Api/AlertEndpoints.cs` | A transaction held open across an SMS call, and the fix |
+| `src/GreenhouseTelemetry.Api/DiagnosticsEndpoints.cs` | A leaked `NpgsqlConnection`, and the fix |
+| `src/GreenhouseTelemetry.LoadTest` | Concurrent load generator that round-robins over instances and groups errors |
+| `scripts/` | Start/stop N instances with a given `Max Pool Size`, run load, snapshot `pg_stat_activity` |
+| `db/init.sql` | `telemetry_app` role, schema, 60,000 seeded readings |
 
-## Entity Framework Core
-
-| Lesson | Branch |
-| --- | --- |
-| [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
-| [EF Core 11: Indexing and Querying Nested Complex Types](https://dotnetacademy.dev/lesson/ef-core-11-indexing-and-querying-nested-complex-types/362) | [`efcore11-nested-complex-indexes`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore11-nested-complex-indexes) |
-
-## Claude Code
-
-| Lesson | Branch |
-| --- | --- |
-| [Claude Code Permissions for .NET Projects: Allow, Ask and Deny](https://dotnetacademy.dev/lesson/claude-code-permissions-for-net-projects-allow-ask-and-deny/361) | [`claude-code-dotnet-permissions`](https://github.com/Fcakiroglu16/dotnetacademy/tree/claude-code-dotnet-permissions) |
-
-## Running a lesson
+## Run it
 
 ```bash
-git clone https://github.com/Fcakiroglu16/dotnetacademy.git
-cd dotnetacademy
-git switch csharp15-union-types
-dotnet run --project src/UnionTypes.ConsoleApp
+docker compose up -d --wait
+dotnet build
+
+scripts/start-instances.sh 3 20          # 3 x 20 = 60 possible connections > 37 slots
+scripts/load.sh GET '/greenhouses/{n}/climate-report' 120 600 3
+scripts/stop-instances.sh
+
+scripts/start-instances.sh 3 10          # 3 x 10 = 30, fits the budget
+scripts/load.sh GET '/greenhouses/{n}/climate-report' 120 600 3
+scripts/snapshot.sh                      # run in a second terminal during the load
+scripts/stop-instances.sh
 ```
 
-The EF Core lessons need Docker and the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (the EF Core 11 lesson needs .NET 11). The C# 15 lessons need the [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (RC 2 or later).
+Clean up with `docker compose down -v`.

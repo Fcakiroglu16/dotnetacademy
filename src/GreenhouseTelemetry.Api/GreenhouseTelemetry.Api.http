@@ -1,0 +1,21 @@
+@api = http://localhost:5091
+
+POST {{api}}/readings
+Content-Type: application/json
+
+{ "greenhouseId": 4, "sensorCode": "GH4-S2", "temperatureC": 27.4, "humidityPct": 71 }
+
+###
+GET {{api}}/greenhouses/4/climate-report
+
+###
+POST {{api}}/greenhouses/4/alerts/evaluate-in-transaction
+
+###
+POST {{api}}/greenhouses/4/alerts/evaluate
+
+###
+GET {{api}}/sensors/calibration-leaky
+
+###
+GET {{api}}/sensors/calibration
