@@ -1,4 +1,4 @@
-# EF Core 11 migrations for teams
+# EF Core 11 migrations
 
 Sample code for the dotnetacademy.dev lesson. A veterinary clinic model shows four EF Core 11 migration features on SQLite:
 
