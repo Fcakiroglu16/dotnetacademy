@@ -1,0 +1,5 @@
+{
+  "project": "src/Clinic.Data",
+  "startupProject": "src/Clinic.ConsoleApp",
+  "context": "ClinicDbContext"
+}

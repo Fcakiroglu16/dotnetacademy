@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Clinic.Data/Clinic.Data.csproj" />
+    <Project Path="src/Clinic.ConsoleApp/Clinic.ConsoleApp.csproj" />
+  </Folder>
+</Solution>
