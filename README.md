@@ -17,7 +17,7 @@ Each lesson lives on its own branch. `main` only holds this index.
 | [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
 | [EF Core 11: Indexing and Querying Nested Complex Types](https://dotnetacademy.dev/lesson/ef-core-11-indexing-and-querying-nested-complex-types/362) | [`efcore11-nested-complex-indexes`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore11-nested-complex-indexes) |
 | [PostgreSQL Connection Pooling in .NET: Preventing Connection Exhaustion with Npgsql and EF Core](https://dotnetacademy.dev/lesson/postgresql-connection-pooling-in-net-preventing-connection-exhaustion-with-npgsql-and-ef-core/363) | [`postgres-connection-pooling`](https://github.com/Fcakiroglu16/dotnetacademy/tree/postgres-connection-pooling) |
-| [EF Core 11 Migrations for Teams: Foreign Key Exclusion, Snapshot Conflicts and dotnet-ef.json](https://dotnetacademy.dev/lesson/ef-core-11-migrations-for-teams-foreign-key-exclusion-snapshot-conflicts-and-dotnet-efjson/365) | [`efcore11-migrations-for-teams`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore11-migrations-for-teams) |
+| [EF Core 11 Migrations: Constraint-Free Relationships, Snapshot Conflicts and the dotnet-ef Config File](https://dotnetacademy.dev/lesson/ef-core-11-migrations-constraint-free-relationships-snapshot-conflicts-and-the-dotnet-ef-config-file/365) | [`efcore11-migrations-for-teams`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore11-migrations-for-teams) |
 
 ## Claude Code
 
