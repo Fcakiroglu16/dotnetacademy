@@ -24,6 +24,12 @@ Each lesson lives on its own branch. `main` only holds this index.
 | --- | --- |
 | [Claude Code Permissions for .NET Projects: Allow, Ask and Deny](https://dotnetacademy.dev/lesson/claude-code-permissions-for-net-projects-allow-ask-and-deny/361) | [`claude-code-dotnet-permissions`](https://github.com/Fcakiroglu16/dotnetacademy/tree/claude-code-dotnet-permissions) |
 
+## Modular Monolith
+
+| Lesson | Branch |
+| --- | --- |
+| [Modular Monolith in ASP.NET Core with IHostingStartup: Choose Your Modules at Startup](https://dotnetacademy.dev/lesson/modular-monolith-in-aspnet-core-with-ihostingstartup-choose-your-modules-at-startup/364) | [`aspnet-modular-monolith`](https://github.com/Fcakiroglu16/dotnetacademy/tree/aspnet-modular-monolith) |
+
 ## Running a lesson
 
 ```bash
