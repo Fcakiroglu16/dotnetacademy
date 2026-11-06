@@ -1,0 +1,16 @@
+@host = http://localhost:5200
+
+### which modules are loaded in this process
+GET {{host}}/
+
+### quote for parcel 1 (2.5 kg, 120 km)
+GET {{host}}/parcels/1/quote
+
+### quote for parcel 2 (18 kg, 640 km)
+GET {{host}}/parcels/2/quote
+
+### quotes backend, only in the split topology
+POST http://localhost:5201/quotes
+Content-Type: application/json
+
+{ "weightKg": 5, "distanceKm": 300 }

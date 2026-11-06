@@ -1,36 +1,25 @@
-# dotnetacademy
+# Modular monolith in ASP.NET Core with IHostingStartup
 
-Source code for the lessons on [dotnetacademy.dev](https://dotnetacademy.dev).
+Sample code for the dotnetacademy.dev lesson. A parcel-shipping app is split into modules. The host does not reference any module type. The `HOSTINGSTARTUPASSEMBLIES` environment variable decides which modules load, so the same build runs as one process or as two.
 
-Each lesson lives on its own branch. `main` only holds this index.
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
-## C# 15 (.NET 11)
-
-| Lesson | Branch |
+| Project | Role |
 | --- | --- |
-| [Union Types](https://dotnetacademy.dev/lesson/c-15-union-types-one-value-a-closed-set-of-types/359) | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
+| `Logistics.Contracts` | `IShippingQuoteService` and its records |
+| `Logistics.Quotes.Core` | price rule shared by the local and API modules |
+| `Logistics.ModuleKit` | `ModuleBase` (hosting startup + startup filter) |
+| `Logistics.Host` | empty web host, `UseRouting` only |
+| `Modules/Parcels` | `GET /parcels/{id}/quote`, consumes the contract |
+| `Modules/Quotes.Local` | in-process implementation |
+| `Modules/Quotes.Remote` | HTTP client implementation |
+| `Modules/Quotes.Api` | `POST /quotes`, the remote side |
 
-## Entity Framework Core
-
-| Lesson | Branch |
-| --- | --- |
-| [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
-| [EF Core 11: Indexing and Querying Nested Complex Types](https://dotnetacademy.dev/lesson/ef-core-11-indexing-and-querying-nested-complex-types/362) | [`efcore11-nested-complex-indexes`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore11-nested-complex-indexes) |
-| [PostgreSQL Connection Pooling in .NET: Preventing Connection Exhaustion with Npgsql and EF Core](https://dotnetacademy.dev/lesson/postgresql-connection-pooling-in-net-preventing-connection-exhaustion-with-npgsql-and-ef-core/363) | [`postgres-connection-pooling`](https://github.com/Fcakiroglu16/dotnetacademy/tree/postgres-connection-pooling) |
-
-## Claude Code
-
-| Lesson | Branch |
-| --- | --- |
-| [Claude Code Permissions for .NET Projects: Allow, Ask and Deny](https://dotnetacademy.dev/lesson/claude-code-permissions-for-net-projects-allow-ask-and-deny/361) | [`claude-code-dotnet-permissions`](https://github.com/Fcakiroglu16/dotnetacademy/tree/claude-code-dotnet-permissions) |
-
-## Running a lesson
+## Run
 
 ```bash
-git clone https://github.com/Fcakiroglu16/dotnetacademy.git
-cd dotnetacademy
-git switch csharp15-union-types
-dotnet run --project src/UnionTypes.ConsoleApp
+./scripts/run-single.sh   # one process on :5200
+./scripts/run-split.sh    # gateway on :5200, quotes backend on :5201
 ```
 
-The EF Core lessons need Docker and the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (the EF Core 11 lesson needs .NET 11). The C# 15 lessons need the [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (RC 2 or later).
+Then call `GET http://localhost:5200/parcels/1/quote` (see `requests.http`). In the split topology `calculatedBy` shows the backend's process id.

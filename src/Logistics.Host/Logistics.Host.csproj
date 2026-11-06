@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <!-- Build-time only: these references copy the module DLLs next to the host.
+       No host code uses a module type. Which modules load is decided at startup. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\Parcels\Logistics.Module.Parcels.csproj" />
+    <ProjectReference Include="..\Modules\Quotes.Local\Logistics.Module.Quotes.Local.csproj" />
+    <ProjectReference Include="..\Modules\Quotes.Remote\Logistics.Module.Quotes.Remote.csproj" />
+    <ProjectReference Include="..\Modules\Quotes.Api\Logistics.Module.Quotes.Api.csproj" />
+  </ItemGroup>
+
+</Project>

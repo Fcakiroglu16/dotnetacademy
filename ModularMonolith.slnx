@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Logistics.Contracts/Logistics.Contracts.csproj" />
+    <Project Path="src/Logistics.Quotes.Core/Logistics.Quotes.Core.csproj" />
+    <Project Path="src/Logistics.ModuleKit/Logistics.ModuleKit.csproj" />
+    <Project Path="src/Logistics.Host/Logistics.Host.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/">
+    <Project Path="src/Modules/Parcels/Logistics.Module.Parcels.csproj" />
+    <Project Path="src/Modules/Quotes.Local/Logistics.Module.Quotes.Local.csproj" />
+    <Project Path="src/Modules/Quotes.Remote/Logistics.Module.Quotes.Remote.csproj" />
+    <Project Path="src/Modules/Quotes.Api/Logistics.Module.Quotes.Api.csproj" />
+  </Folder>
+</Solution>
