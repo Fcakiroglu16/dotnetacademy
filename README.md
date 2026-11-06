@@ -1,42 +1,18 @@
-# dotnetacademy
+# EF Core 11 migrations for teams
 
-Source code for the lessons on [dotnetacademy.dev](https://dotnetacademy.dev).
+Sample code for the dotnetacademy.dev lesson. A veterinary clinic model shows four EF Core 11 migration features on SQLite:
 
-Each lesson lives on its own branch. `main` only holds this index.
+- `ExcludeForeignKeyFromMigrations()` for a lab feed that can arrive before its parent rows
+- `.config/dotnet-ef.json` so `dotnet ef` needs no `--project`, `--startup-project` or `--context`
+- a model snapshot that records the last migration id, so diverged branches conflict in Git
+- `--context "*"` across several DbContexts
 
-## C# 15 (.NET 11)
-
-| Lesson | Branch |
-| --- | --- |
-| [Union Types](https://dotnetacademy.dev/lesson/c-15-union-types-one-value-a-closed-set-of-types/359) | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
-
-## Entity Framework Core
-
-| Lesson | Branch |
-| --- | --- |
-| [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
-| [EF Core 11: Indexing and Querying Nested Complex Types](https://dotnetacademy.dev/lesson/ef-core-11-indexing-and-querying-nested-complex-types/362) | [`efcore11-nested-complex-indexes`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore11-nested-complex-indexes) |
-| [PostgreSQL Connection Pooling in .NET: Preventing Connection Exhaustion with Npgsql and EF Core](https://dotnetacademy.dev/lesson/postgresql-connection-pooling-in-net-preventing-connection-exhaustion-with-npgsql-and-ef-core/363) | [`postgres-connection-pooling`](https://github.com/Fcakiroglu16/dotnetacademy/tree/postgres-connection-pooling) |
-
-## Claude Code
-
-| Lesson | Branch |
-| --- | --- |
-| [Claude Code Permissions for .NET Projects: Allow, Ask and Deny](https://dotnetacademy.dev/lesson/claude-code-permissions-for-net-projects-allow-ask-and-deny/361) | [`claude-code-dotnet-permissions`](https://github.com/Fcakiroglu16/dotnetacademy/tree/claude-code-dotnet-permissions) |
-
-## Modular Monolith
-
-| Lesson | Branch |
-| --- | --- |
-| [Modular Monolith in ASP.NET Core with IHostingStartup: Choose Your Modules at Startup](https://dotnetacademy.dev/lesson/modular-monolith-in-aspnet-core-with-ihostingstartup-choose-your-modules-at-startup/364) | [`aspnet-modular-monolith`](https://github.com/Fcakiroglu16/dotnetacademy/tree/aspnet-modular-monolith) |
-
-## Running a lesson
+Requires the .NET 11 SDK (RC 2 or later) and the local tool manifest in `.config/dotnet-tools.json` (EF Core 11.0.0-rc.3).
 
 ```bash
-git clone https://github.com/Fcakiroglu16/dotnetacademy.git
-cd dotnetacademy
-git switch csharp15-union-types
-dotnet run --project src/UnionTypes.ConsoleApp
+dotnet tool restore
+dotnet ef database update --context "*"   # applies ClinicDbContext and ScheduleDbContext
+dotnet run --project src/Clinic.ConsoleApp
 ```
 
-The EF Core lessons need Docker and the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (the EF Core 11 lesson needs .NET 11). The C# 15 lessons need the [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (RC 2 or later).
+The databases are created in `<temp dir>/clinic-lesson/`, so `dotnet run` and `dotnet ef` always see the same files.
