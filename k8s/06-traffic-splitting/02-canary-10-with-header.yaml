@@ -1,0 +1,25 @@
+# Same 90/10 split, plus a rule that always sends QA traffic to v2.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pricing
+  namespace: pedalshare-pricing
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: http
+  hostnames:
+  - pricing.pedalshare.local
+  rules:
+  - matches:
+    - path: {type: PathPrefix, value: /fares}
+      headers:
+      - {name: X-PedalShare-Canary, value: always}
+    backendRefs:
+    - {name: pricing-api-v2, port: 80}
+  - matches:
+    - path: {type: PathPrefix, value: /fares}
+    backendRefs:
+    - {name: pricing-api-v1, port: 80, weight: 90}
+    - {name: pricing-api-v2, port: 80, weight: 10}

@@ -1,0 +1,19 @@
+# Every backend at weight 0: the rule has nowhere to send traffic.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pricing
+  namespace: pedalshare-pricing
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: http
+  hostnames:
+  - pricing.pedalshare.local
+  rules:
+  - matches:
+    - path: {type: PathPrefix, value: /fares}
+    backendRefs:
+    - {name: pricing-api-v1, port: 80, weight: 0}
+    - {name: pricing-api-v2, port: 80, weight: 0}

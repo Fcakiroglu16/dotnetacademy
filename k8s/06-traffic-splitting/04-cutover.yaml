@@ -1,0 +1,19 @@
+# Weighted split: v1=0, v2=100. Weights are relative, they do not need to add up to 100.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pricing
+  namespace: pedalshare-pricing
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: http
+  hostnames:
+  - pricing.pedalshare.local
+  rules:
+  - matches:
+    - path: {type: PathPrefix, value: /fares}
+    backendRefs:
+    - {name: pricing-api-v1, port: 80, weight: 0}
+    - {name: pricing-api-v2, port: 80, weight: 100}
