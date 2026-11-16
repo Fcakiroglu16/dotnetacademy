@@ -1,0 +1,115 @@
+# PedalShare rides team: the stable API, a beta build and an audit copy that receives mirrored traffic.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pedalshare-rides
+  labels:
+    pedalshare.io/edge-access: "true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rides-api
+  namespace: pedalshare-rides
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: rides-api}
+  template:
+    metadata:
+      labels: {app: rides-api}
+    spec:
+      containers:
+      - name: api
+        image: pedalshare-api:1.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - {name: SERVICE_NAME, value: rides-api}
+        - {name: SERVICE_VERSION, value: v1}
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet: {path: /healthz, port: 8080}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rides-api
+  namespace: pedalshare-rides
+spec:
+  selector: {app: rides-api}
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rides-api-beta
+  namespace: pedalshare-rides
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: rides-api-beta}
+  template:
+    metadata:
+      labels: {app: rides-api-beta}
+    spec:
+      containers:
+      - name: api
+        image: pedalshare-api:1.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - {name: SERVICE_NAME, value: rides-api-beta}
+        - {name: SERVICE_VERSION, value: v2}
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet: {path: /healthz, port: 8080}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rides-api-beta
+  namespace: pedalshare-rides
+spec:
+  selector: {app: rides-api-beta}
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rides-audit
+  namespace: pedalshare-rides
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: rides-audit}
+  template:
+    metadata:
+      labels: {app: rides-audit}
+    spec:
+      containers:
+      - name: api
+        image: pedalshare-api:1.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - {name: SERVICE_NAME, value: rides-audit}
+        - {name: SERVICE_VERSION, value: v1}
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet: {path: /healthz, port: 8080}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rides-audit
+  namespace: pedalshare-rides
+spec:
+  selector: {app: rides-audit}
+  ports:
+  - port: 80
+    targetPort: 8080

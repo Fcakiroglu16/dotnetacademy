@@ -1,0 +1,55 @@
+# Filters: change the request or the response on the way through the Gateway.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: rides-filters
+  namespace: pedalshare-rides
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: http
+  hostnames:
+  - rides.pedalshare.local
+  rules:
+  # The old mobile app still calls /trips. Send it to /rides with a permanent redirect.
+  - matches:
+    - path: {type: PathPrefix, value: /trips}
+    filters:
+    - type: RequestRedirect
+      requestRedirect:
+        statusCode: 301
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /rides
+  # Partners call /partner-api/v1/rides; the backend only knows /rides.
+  - matches:
+    - path: {type: PathPrefix, value: /partner-api/v1/rides}
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /rides
+    - type: RequestHeaderModifier
+      requestHeaderModifier:
+        set:
+        - {name: X-Caller-Type, value: partner}
+        remove:
+        - X-Internal-Debug
+    - type: ResponseHeaderModifier
+      responseHeaderModifier:
+        add:
+        - {name: Cache-Control, value: no-store}
+    backendRefs:
+    - {name: rides-api, port: 80}
+  # Starting a ride: the audit service gets a copy of every request. Its responses are discarded.
+  - matches:
+    - path: {type: Exact, value: /rides/start}
+      method: POST
+    filters:
+    - type: RequestMirror
+      requestMirror:
+        backendRef: {name: rides-audit, port: 80}
+    backendRefs:
+    - {name: rides-api, port: 80}

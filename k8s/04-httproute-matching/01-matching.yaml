@@ -1,0 +1,36 @@
+# Matching: one hostname, several rules. Requests go to the rule with the most specific match.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: rides
+  namespace: pedalshare-rides
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: http
+  hostnames:
+  - rides.pedalshare.local
+  rules:
+  # Beta testers: the mobile app sends a header, the web app a query parameter.
+  # Two entries in "matches" are ORed; conditions inside one entry are ANDed.
+  - matches:
+    - path: {type: PathPrefix, value: /rides}
+      headers:
+      - {name: X-App-Channel, value: beta}
+    - path: {type: PathPrefix, value: /rides}
+      queryParams:
+      - {name: channel, value: beta}
+    backendRefs:
+    - {name: rides-api-beta, port: 80}
+  # Ending a ride is only allowed with POST.
+  - matches:
+    - path: {type: Exact, value: /rides/end}
+      method: POST
+    backendRefs:
+    - {name: rides-api, port: 80}
+  # Everything else under /rides.
+  - matches:
+    - path: {type: PathPrefix, value: /rides}
+    backendRefs:
+    - {name: rides-api, port: 80}
