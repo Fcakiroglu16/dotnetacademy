@@ -1,0 +1,38 @@
+# Traefik-only feature, plugged into a standard HTTPRoute through an ExtensionRef filter.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: unlock-rate-limit
+  namespace: pedalshare-stations
+spec:
+  rateLimit:
+    average: 2      # requests per second, per client IP
+    burst: 4
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: station-unlock
+  namespace: pedalshare-stations
+spec:
+  parentRefs:
+  - name: public-traefik
+    namespace: pedalshare-infra
+    sectionName: http
+  hostnames:
+  - stations.pedalshare.local
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /unlock
+      method: POST
+    filters:
+    - type: ExtensionRef
+      extensionRef:
+        group: traefik.io
+        kind: Middleware
+        name: unlock-rate-limit
+    backendRefs:
+    - name: stations-api
+      port: 80

@@ -1,0 +1,22 @@
+# Traefik 3.7 as a Gateway API controller.
+providers:
+  kubernetesGateway:
+    enabled: true
+  kubernetesIngress:
+    enabled: false      # this cluster routes only through Gateway API
+  kubernetesCRD:
+    enabled: true       # keeps Traefik Middleware CRDs for ExtensionRef filters
+
+gateway:
+  enabled: false        # the platform team creates its own Gateway
+
+gatewayClass:
+  enabled: true         # registers the "traefik" GatewayClass
+
+service:
+  spec:
+    type: NodePort      # kind has no cloud load balancer
+
+ingressRoute:
+  dashboard:
+    enabled: false
