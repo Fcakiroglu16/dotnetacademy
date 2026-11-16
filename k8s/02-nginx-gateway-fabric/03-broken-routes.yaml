@@ -1,0 +1,43 @@
+# Two routes that NGINX Gateway Fabric reports as problems in status.
+# 1) Lives in a namespace without the pedalshare.io/edge-access label.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pedalshare-sandbox
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sandbox
+  namespace: pedalshare-sandbox
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+  hostnames:
+  - sandbox.pedalshare.local
+  rules:
+  - backendRefs:
+    - name: sandbox-api
+      port: 80
+---
+# 2) Allowed namespace, but the backend Service does not exist.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: docks
+  namespace: pedalshare-stations
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+  hostnames:
+  - stations.pedalshare.local
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /docks
+    backendRefs:
+    - name: docks-api
+      port: 80

@@ -1,0 +1,13 @@
+# NGINX Gateway Fabric policy: limit request bodies sent to the stations route.
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+  name: stations-body-limit
+  namespace: pedalshare-stations
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: stations
+  body:
+    maxSize: 1k

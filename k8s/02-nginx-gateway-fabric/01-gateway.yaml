@@ -1,0 +1,24 @@
+# The platform team's shared entry point, implemented by NGINX Gateway Fabric (class "nginx").
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pedalshare-infra
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: public
+  namespace: pedalshare-infra
+spec:
+  gatewayClassName: nginx
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    hostname: "*.pedalshare.local"
+    allowedRoutes:
+      namespaces:
+        from: Selector
+        selector:
+          matchLabels:
+            pedalshare.io/edge-access: "true"

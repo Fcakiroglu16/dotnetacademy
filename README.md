@@ -1,6 +1,6 @@
 # Kubernetes Gateway API series: PedalShare
 
-Source code for the dotnetacademy.dev lesson [Kubernetes Gateway API Fundamentals: GatewayClass, Gateway, Routes and Status Conditions](https://dotnetacademy.dev/lesson/kubernetes-gateway-api-fundamentals-gatewayclass-gateway-routes-and-status-conditions/366) (lesson 1 of 7).
+Source code for the dotnetacademy.dev lesson [Gateway API with NGINX Gateway Fabric: Installation, Routing and NGINX Extensions](https://dotnetacademy.dev/lesson/gateway-api-with-nginx-gateway-fabric-installation-routing-and-nginx-extensions/367) (lesson 2 of 7).
 
 PedalShare is a city bike-sharing platform: a stations API, a rides API, a pricing API and a gRPC fleet
 telemetry service, all .NET 10. One echo image (`src/PedalShare.Api`) plays every HTTP service; it returns the
@@ -12,6 +12,7 @@ Branches are cumulative: each one contains the files of the lessons before it.
 | # | Lesson | Branch | Added files |
 | --- | --- | --- | --- |
 | 1 | [Kubernetes Gateway API Fundamentals: GatewayClass, Gateway, Routes and Status Conditions](https://dotnetacademy.dev/lesson/kubernetes-gateway-api-fundamentals-gatewayclass-gateway-routes-and-status-conditions/366) | `gateway-api-fundamentals` | `k8s/01-fundamentals` |
+| 2 | [Gateway API with NGINX Gateway Fabric: Installation, Routing and NGINX Extensions](https://dotnetacademy.dev/lesson/gateway-api-with-nginx-gateway-fabric-installation-routing-and-nginx-extensions/367) | `gateway-api-nginx-gateway-fabric` | `k8s/02-nginx-gateway-fabric`, `k8s/apps/stations-api.yaml` |
 
 ## Requirements
 
@@ -32,7 +33,7 @@ Branches are cumulative: each one contains the files of the lessons before it.
 ```bash
 git clone https://github.com/Fcakiroglu16/dotnetacademy.git
 cd dotnetacademy
-git switch gateway-api-fundamentals
+git switch gateway-api-nginx-gateway-fabric
 
 scripts/cluster-up.sh       # kind cluster "gateway-lab", images, Gateway API CRDs
 # follow the lesson, then:

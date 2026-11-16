@@ -1,0 +1,36 @@
+# NGINX Gateway Fabric extension: data-plane settings for one Gateway.
+apiVersion: gateway.nginx.org/v1alpha2
+kind: NginxProxy
+metadata:
+  name: public-proxy
+  namespace: pedalshare-infra
+spec:
+  serverTokens: "off"
+  kubernetes:
+    deployment:
+      replicas: 2
+---
+# The Gateway points at it through the standard infrastructure.parametersRef field.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: public
+  namespace: pedalshare-infra
+spec:
+  gatewayClassName: nginx
+  infrastructure:
+    parametersRef:
+      group: gateway.nginx.org
+      kind: NginxProxy
+      name: public-proxy
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    hostname: "*.pedalshare.local"
+    allowedRoutes:
+      namespaces:
+        from: Selector
+        selector:
+          matchLabels:
+            pedalshare.io/edge-access: "true"
