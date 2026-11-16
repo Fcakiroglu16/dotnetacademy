@@ -1,43 +1,44 @@
-# dotnetacademy
+# Kubernetes Gateway API series: PedalShare
 
-Source code for the lessons on [dotnetacademy.dev](https://dotnetacademy.dev).
+Source code for the dotnetacademy.dev lesson [Kubernetes Gateway API Fundamentals: GatewayClass, Gateway, Routes and Status Conditions](https://dotnetacademy.dev/lesson/kubernetes-gateway-api-fundamentals-gatewayclass-gateway-routes-and-status-conditions/366) (lesson 1 of 7).
 
-Each lesson lives on its own branch. `main` only holds this index.
+PedalShare is a city bike-sharing platform: a stations API, a rides API, a pricing API and a gRPC fleet
+telemetry service, all .NET 10. One echo image (`src/PedalShare.Api`) plays every HTTP service; it returns the
+service name, version, Pod, path, query and `X-*` headers it received, so each lesson can show which backend
+answered. `src/PedalShare.Telemetry` is the ASP.NET Core gRPC service.
 
-## C# 15 (.NET 11)
+Branches are cumulative: each one contains the files of the lessons before it.
 
-| Lesson | Branch |
+| # | Lesson | Branch | Added files |
+| --- | --- | --- | --- |
+| 1 | [Kubernetes Gateway API Fundamentals: GatewayClass, Gateway, Routes and Status Conditions](https://dotnetacademy.dev/lesson/kubernetes-gateway-api-fundamentals-gatewayclass-gateway-routes-and-status-conditions/366) | `gateway-api-fundamentals` | `k8s/01-fundamentals` |
+
+## Requirements
+
+- Docker, [kind](https://kind.sigs.k8s.io/) v0.33+, kubectl, Helm 3.8+
+- curl; `grpcurl` for the gRPC lesson
+- .NET 10 SDK only if you want to build the apps outside Docker
+
+| Component | Version |
 | --- | --- |
-| [Union Types](https://dotnetacademy.dev/lesson/c-15-union-types-one-value-a-closed-set-of-types/359) | [`csharp15-union-types`](https://github.com/Fcakiroglu16/dotnetacademy/tree/csharp15-union-types) |
+| Kubernetes (kind node image) | v1.36.4 |
+| Gateway API CRDs | v1.6.3, Standard channel |
+| NGINX Gateway Fabric | 2.8.1 |
+| Traefik (chart) | 3.7.18 (42.4.0) |
+| cert-manager | 1.21.3 |
 
-## Entity Framework Core
-
-| Lesson | Branch |
-| --- | --- |
-| [EF Core Migrations the Right Way: Migration Bundles in CI/CD](https://dotnetacademy.dev/lesson/ef-core-migrations-the-right-way-migration-bundles-in-cicd/360) | [`efcore-migration-bundles`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore-migration-bundles) |
-| [EF Core 11: Indexing and Querying Nested Complex Types](https://dotnetacademy.dev/lesson/ef-core-11-indexing-and-querying-nested-complex-types/362) | [`efcore11-nested-complex-indexes`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore11-nested-complex-indexes) |
-| [PostgreSQL Connection Pooling in .NET: Preventing Connection Exhaustion with Npgsql and EF Core](https://dotnetacademy.dev/lesson/postgresql-connection-pooling-in-net-preventing-connection-exhaustion-with-npgsql-and-ef-core/363) | [`postgres-connection-pooling`](https://github.com/Fcakiroglu16/dotnetacademy/tree/postgres-connection-pooling) |
-| [EF Core 11 Migrations: Constraint-Free Relationships, Snapshot Conflicts and the dotnet-ef Config File](https://dotnetacademy.dev/lesson/ef-core-11-migrations-constraint-free-relationships-snapshot-conflicts-and-the-dotnet-ef-config-file/365) | [`efcore11-migrations-for-teams`](https://github.com/Fcakiroglu16/dotnetacademy/tree/efcore11-migrations-for-teams) |
-
-## Claude Code
-
-| Lesson | Branch |
-| --- | --- |
-| [Claude Code Permissions for .NET Projects: Allow, Ask and Deny](https://dotnetacademy.dev/lesson/claude-code-permissions-for-net-projects-allow-ask-and-deny/361) | [`claude-code-dotnet-permissions`](https://github.com/Fcakiroglu16/dotnetacademy/tree/claude-code-dotnet-permissions) |
-
-## Modular Monolith
-
-| Lesson | Branch |
-| --- | --- |
-| [Modular Monolith in ASP.NET Core with IHostingStartup: Choose Your Modules at Startup](https://dotnetacademy.dev/lesson/modular-monolith-in-aspnet-core-with-ihostingstartup-choose-your-modules-at-startup/364) | [`aspnet-modular-monolith`](https://github.com/Fcakiroglu16/dotnetacademy/tree/aspnet-modular-monolith) |
-
-## Running a lesson
+## Run it
 
 ```bash
 git clone https://github.com/Fcakiroglu16/dotnetacademy.git
 cd dotnetacademy
-git switch csharp15-union-types
-dotnet run --project src/UnionTypes.ConsoleApp
+git switch gateway-api-fundamentals
+
+scripts/cluster-up.sh       # kind cluster "gateway-lab", images, Gateway API CRDs
+# follow the lesson, then:
+scripts/cluster-down.sh
 ```
 
-The EF Core lessons need Docker and the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (the EF Core 11 lesson needs .NET 11). The C# 15 lessons need the [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (RC 2 or later).
+`scripts/port-forward.sh` (from lesson 2 on) keeps `localhost:8080`/`8443` open to the NGINX Gateway Fabric
+data plane and `localhost:8081` to Traefik, restarting `kubectl port-forward` when it drops.
+

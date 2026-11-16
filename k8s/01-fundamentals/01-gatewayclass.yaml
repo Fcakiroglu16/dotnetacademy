@@ -1,0 +1,9 @@
+# Infrastructure provider: names the controller that will implement Gateways of this class.
+# No controller with this name runs in the cluster yet, on purpose.
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: pedalshare-edge
+spec:
+  controllerName: example.com/not-installed-yet
+  description: Edge proxy for PedalShare public traffic

@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option csharp_namespace = "PedalShare.Telemetry";
+
+package pedalshare.telemetry.v1;
+
+// Bikes report their battery and position; the fleet team reads a bike's last state.
+service FleetTelemetry {
+  rpc ReportPing (BikePing) returns (PingAck);
+  rpc GetBikeStatus (BikeStatusRequest) returns (BikeStatus);
+}
+
+message BikePing {
+  string bike_id = 1;
+  int32 battery_percent = 2;
+  double latitude = 3;
+  double longitude = 4;
+}
+
+message PingAck {
+  bool accepted = 1;
+  string handled_by = 2;
+}
+
+message BikeStatusRequest {
+  string bike_id = 1;
+}
+
+message BikeStatus {
+  string bike_id = 1;
+  int32 battery_percent = 2;
+  string handled_by = 3;
+}

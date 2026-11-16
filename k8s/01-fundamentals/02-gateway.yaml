@@ -1,0 +1,24 @@
+# Cluster operator: one entry point, one HTTP listener, routes allowed only from labelled namespaces.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pedalshare-infra
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: public
+  namespace: pedalshare-infra
+spec:
+  gatewayClassName: pedalshare-edge
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    hostname: "*.pedalshare.local"
+    allowedRoutes:
+      namespaces:
+        from: Selector
+        selector:
+          matchLabels:
+            pedalshare.io/edge-access: "true"
