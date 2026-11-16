@@ -31,6 +31,20 @@ Each lesson lives on its own branch. `main` only holds this index.
 | --- | --- |
 | [Modular Monolith in ASP.NET Core with IHostingStartup: Choose Your Modules at Startup](https://dotnetacademy.dev/lesson/modular-monolith-in-aspnet-core-with-ihostingstartup-choose-your-modules-at-startup/364) | [`aspnet-modular-monolith`](https://github.com/Fcakiroglu16/dotnetacademy/tree/aspnet-modular-monolith) |
 
+## Kubernetes Gateway API
+
+Branches are cumulative: each one builds on the one before it. Run `scripts/cluster-up.sh` (kind, Docker, Helm).
+
+| Lesson | Branch |
+| --- | --- |
+| [Kubernetes Gateway API Fundamentals: GatewayClass, Gateway, Routes and Status Conditions](https://dotnetacademy.dev/lesson/kubernetes-gateway-api-fundamentals-gatewayclass-gateway-routes-and-status-conditions/366) | [`gateway-api-fundamentals`](https://github.com/Fcakiroglu16/dotnetacademy/tree/gateway-api-fundamentals) |
+| [Gateway API with NGINX Gateway Fabric: Installation, Routing and NGINX Extensions](https://dotnetacademy.dev/lesson/gateway-api-with-nginx-gateway-fabric-installation-routing-and-nginx-extensions/367) | [`gateway-api-nginx-gateway-fabric`](https://github.com/Fcakiroglu16/dotnetacademy/tree/gateway-api-nginx-gateway-fabric) |
+| [Gateway API with Traefik: Running the Same Routes on a Second Implementation](https://dotnetacademy.dev/lesson/gateway-api-with-traefik-running-the-same-routes-on-a-second-implementation/368) | [`gateway-api-traefik`](https://github.com/Fcakiroglu16/dotnetacademy/tree/gateway-api-traefik) |
+| [HTTPRoute Matching and Filters: Headers, Query Parameters, Redirects, Rewrites and Mirroring](https://dotnetacademy.dev/lesson/httproute-matching-and-filters-headers-query-parameters-redirects-rewrites-and-mirroring/369) | [`gateway-api-httproute-matching`](https://github.com/Fcakiroglu16/dotnetacademy/tree/gateway-api-httproute-matching) |
+| [HTTPS with Gateway API and cert-manager: Automatic Certificates and HTTP to HTTPS Redirects](https://dotnetacademy.dev/lesson/https-with-gateway-api-and-cert-manager-automatic-certificates-and-http-to-https-redirects/370) | [`gateway-api-https-cert-manager`](https://github.com/Fcakiroglu16/dotnetacademy/tree/gateway-api-https-cert-manager) |
+| [Canary and Blue/Green Releases with Gateway API Traffic Weights](https://dotnetacademy.dev/lesson/canary-and-bluegreen-releases-with-gateway-api-traffic-weights/371) | [`gateway-api-traffic-splitting`](https://github.com/Fcakiroglu16/dotnetacademy/tree/gateway-api-traffic-splitting) |
+| [Sharing a Gateway Across Namespaces: ReferenceGrant and GRPCRoute for .NET gRPC](https://dotnetacademy.dev/lesson/sharing-a-gateway-across-namespaces-referencegrant-and-grpcroute-for-net-grpc/372) | [`gateway-api-referencegrant-grpcroute`](https://github.com/Fcakiroglu16/dotnetacademy/tree/gateway-api-referencegrant-grpcroute) |
+
 ## Running a lesson
 
 ```bash
