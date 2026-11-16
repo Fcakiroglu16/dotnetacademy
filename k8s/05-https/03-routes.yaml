@@ -1,0 +1,38 @@
+# The stations API now answers only on HTTPS.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: stations
+  namespace: pedalshare-stations
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: https
+  hostnames:
+  - stations.pedalshare.local
+  rules:
+  - matches:
+    - path: {type: PathPrefix, value: /stations}
+    backendRefs:
+    - {name: stations-api, port: 80}
+---
+# On the plain HTTP listener, the same host only gets a redirect to HTTPS.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: stations-https-redirect
+  namespace: pedalshare-stations
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: http
+  hostnames:
+  - stations.pedalshare.local
+  rules:
+  - filters:
+    - type: RequestRedirect
+      requestRedirect:
+        scheme: https
+        statusCode: 301

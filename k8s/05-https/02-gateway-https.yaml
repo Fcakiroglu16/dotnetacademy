@@ -1,0 +1,41 @@
+# The public Gateway with a second listener. The annotation asks cert-manager to fill the Secret.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: public
+  namespace: pedalshare-infra
+  annotations:
+    cert-manager.io/cluster-issuer: pedalshare-ca
+spec:
+  gatewayClassName: nginx
+  infrastructure:
+    parametersRef:
+      group: gateway.nginx.org
+      kind: NginxProxy
+      name: public-proxy
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    hostname: "*.pedalshare.local"
+    allowedRoutes:
+      namespaces:
+        from: Selector
+        selector:
+          matchLabels:
+            pedalshare.io/edge-access: "true"
+  - name: https
+    protocol: HTTPS
+    port: 443
+    hostname: "*.pedalshare.local"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: pedalshare-wildcard-tls
+    allowedRoutes:
+      namespaces:
+        from: Selector
+        selector:
+          matchLabels:
+            pedalshare.io/edge-access: "true"
