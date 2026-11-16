@@ -1,0 +1,21 @@
+# The rides team shows the fare next to a ride. The backend belongs to the pricing team,
+# in another namespace, so this reference needs the pricing team's permission.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ride-fares
+  namespace: pedalshare-rides
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: http
+  hostnames:
+  - rides.pedalshare.local
+  rules:
+  - matches:
+    - path: {type: PathPrefix, value: /fares}
+    backendRefs:
+    - name: pricing-api-v1
+      namespace: pedalshare-pricing
+      port: 80

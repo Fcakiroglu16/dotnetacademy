@@ -1,0 +1,18 @@
+# Rejected by NGINX Gateway Fabric 2.8.1: a match with a service but no method is not Core support.
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: fleet-telemetry-service-only
+  namespace: pedalshare-fleet
+spec:
+  parentRefs:
+  - name: public
+    namespace: pedalshare-infra
+    sectionName: https
+  hostnames:
+  - fleet-legacy.pedalshare.local
+  rules:
+  - matches:
+    - method: {service: pedalshare.telemetry.v1.FleetTelemetry}
+    backendRefs:
+    - {name: fleet-telemetry, port: 80}

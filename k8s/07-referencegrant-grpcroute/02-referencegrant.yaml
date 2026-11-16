@@ -1,0 +1,16 @@
+# Created by the pricing team, in its own namespace: HTTPRoutes from pedalshare-rides
+# may send traffic to the pricing-api-v1 Service. Nothing else is allowed.
+apiVersion: gateway.networking.k8s.io/v1
+kind: ReferenceGrant
+metadata:
+  name: rides-to-pricing
+  namespace: pedalshare-pricing
+spec:
+  from:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: pedalshare-rides
+  to:
+  - group: ""
+    kind: Service
+    name: pricing-api-v1

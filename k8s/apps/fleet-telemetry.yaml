@@ -1,0 +1,41 @@
+# PedalShare fleet team: the gRPC telemetry service (.NET, h2c on port 8080).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pedalshare-fleet
+  labels:
+    pedalshare.io/edge-access: "true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fleet-telemetry
+  namespace: pedalshare-fleet
+spec:
+  replicas: 1          # bike state is kept in memory, so one replica keeps reads consistent
+  selector:
+    matchLabels: {app: fleet-telemetry}
+  template:
+    metadata:
+      labels: {app: fleet-telemetry}
+    spec:
+      containers:
+      - name: grpc
+        image: pedalshare-telemetry:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          tcpSocket: {port: 8080}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleet-telemetry
+  namespace: pedalshare-fleet
+spec:
+  selector: {app: fleet-telemetry}
+  ports:
+  - port: 80
+    targetPort: 8080
+    appProtocol: kubernetes.io/h2c   # the port speaks cleartext HTTP/2 (gRPC without TLS)
